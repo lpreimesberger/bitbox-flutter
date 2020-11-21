@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 import 'dart:math';
-import 'package:bip32/src/utils/ecurve.dart' as ecc;
-import 'package:bip32/src/utils/wif.dart' as wif;
-import 'package:bitbox/bitbox.dart';
+import 'package:babybip32/src/utils/ecurve.dart' as ecc;
+import 'package:babybip32/src/utils/wif.dart' as wif;
+import 'babybitbox.dart';
 import 'package:pointycastle/ecc/api.dart';
 
 import 'address.dart';
@@ -103,7 +103,7 @@ class ECPair {
   ECSignature eccSign(Uint8List hash, Uint8List x) {
     if (!ecc.isScalar(hash)) throw new ArgumentError(ecc.THROW_BAD_HASH);
     if (!ecc.isPrivate(x)) throw new ArgumentError(ecc.THROW_BAD_PRIVATE);
-    
+
     ECSignature sig = ecc.deterministicGenerateK(hash, x);
 
     return sig;

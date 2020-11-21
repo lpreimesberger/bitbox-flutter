@@ -1,6 +1,5 @@
 import 'dart:typed_data';
-
-import 'package:bip39/src/bip39_base.dart' as bip39;
+import 'package:babybip39/src/bip39_base.dart' as bip39;
 
 class Mnemonic {
   /// Generate bip39 mnemonic

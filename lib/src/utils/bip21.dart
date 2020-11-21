@@ -1,4 +1,4 @@
-import 'package:bitbox/bitbox.dart';
+import 'package:babybitbox/babybitbox.dart';
 
 class Bip21 {
 

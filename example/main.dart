@@ -1,4 +1,4 @@
-import 'package:bitbox/bitbox.dart' as Bitbox;
+import 'package:bitbox/babybitbox.dart' as Bitbox;
 
 void main() async {
   // set this to false to use mainnet

@@ -39,11 +39,11 @@
         <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
       </form>
     </header>
-    
+
     <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
       <li><a href="https://github.com/tomasforgacbch/bitbox-flutter">bitbox package</a></li>
     </ol>
-    
+
     <h5 class="hidden-xs"><span class="package-name">bitbox</span> <span class="package-kind">package</span></h5>
     <ol>
           <li class="section-title">Libraries</li>
@@ -68,17 +68,17 @@ Works with mainnet and testnet.</p>
     path: &lt;path to the directory&gt;/
 </code></pre>
 <h3 id="2-import-it">2) Import it</h3>
-<pre class="language-dart"><code>// There's a good chance your own project will use similar names as some of the 
-// classes in this library. A simple way to create some order is to import the 
+<pre class="language-dart"><code>// There's a good chance your own project will use similar names as some of the
+// classes in this library. A simple way to create some order is to import the
 // library with Bitbox prefix:
-import 'package:bitbox/bitbox.dart' as Bitbox;
+import 'package:babybitbox/bitbox.dart' as Bitbox;
 </code></pre>
 <h3 id="2-use-it">2) Use it</h3>
 <pre class="language-dart"><code>// set this to true to use testnet
 final testnet = true;
 
-// After running the code for the first time, depositing an amount to the address 
-// displayed in the console, and waiting for confirmation, paste the generated 
+// After running the code for the first time, depositing an amount to the address
+// displayed in the console, and waiting for confirmation, paste the generated
 // mnemonic here, so the code continues below with address withdrawal
 String mnemonic = "";
 
@@ -135,7 +135,7 @@ if (addressDetails["balance"] &gt; 0) {
   // placeholder for total input balance
   int totalBalance = 0;
 
-  // iterate through the list of address utxos and use them as inputs for the 
+  // iterate through the list of address utxos and use them as inputs for the
   // withdrawal transaction
   utxos.forEach((Bitbox.Utxo utxo) {
     // add the utxo as an input for the transaction
@@ -167,7 +167,7 @@ if (addressDetails["balance"] &gt; 0) {
 
     // sign all inputs
     signatures.forEach((signature) {
-      builder.sign(signature["vin"], signature["key_pair"], 
+      builder.sign(signature["vin"], signature["key_pair"],
 	    signature["original_amount"]);
     });
 
@@ -186,7 +186,7 @@ if (addressDetails["balance"] &gt; 0) {
 </code></pre>
 <p>For further documentation, refer to apidoc of this repository</p>
 <h2 id="testing">Testing</h2>
-<p>There are some unit tests in test/bitbox_test.dart. They use data generated from the original <a href="https://developer.bitcoin.com/bitbox/">Bitbox for JS</a> and compare them with the output of this library. 
+<p>There are some unit tests in test/bitbox_test.dart. They use data generated from the original <a href="https://developer.bitcoin.com/bitbox/">Bitbox for JS</a> and compare them with the output of this library.
 The following is tested for both testnet and mainnet:</p>
 <ul>
 <li>Generating the master node from mnemonic and comparing both its XPub and XPriv</li>
@@ -203,22 +203,22 @@ The following is tested for both testnet and mainnet:</p>
 <li>Copy create_test_data.js to a separate directory and download the original Bitbox JS into the directory</li>
 <li>Generate the testing data by runing create_test_data.js with your local nodeJS engine</li>
 <li>Update bitbox_test.dart with the path to the generated test_data.json file</li>
-<li>Run bitbox_test.dart 
+<li>Run bitbox_test.dart
 Optionally between step 1) and 2), send some balance to either testnet or mainnet addresses (or both), wait for confirmations and run create_test_data.js again to update the data and generate testing transactions</li>
 </ol>
 <h2 id="acknowledgments">Acknowledgments</h2>
 <p>This is a port of the original JS-based Bitbox library by Gabriel Cardona and Bitcoin.com, so first of all huge thanks to Gabriel and the whole Bitcoin.com team for doing so much for the BCH ecosystem.</p>
 <p>Also I either re-used a lot of code originally wrote for Bitcoin or called some libraries (bip39 and bip32) by <a href="https://github.com/anicdh">anicdh</a>, so Thanks big time to him. Without that it would take me many more weeks!</p>
       </section>
-      
+
         <section class="summary">
             <h2>Libraries</h2>
           <dl>
             <dt id="bitbox">
-              <span class="name"><a href="bitbox/bitbox-library.html">bitbox</a></span>             
+              <span class="name"><a href="bitbox/bitbox-library.html">bitbox</a></span>
             </dt>
             <dd>
-              
+
             </dd>          </dl>
         </section>
 

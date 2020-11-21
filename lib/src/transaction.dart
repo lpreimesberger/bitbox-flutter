@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:bitbox/src/utils/rest_api.dart';
+import 'package:babybitbox/src/utils/rest_api.dart';
 import 'package:hex/hex.dart';
 import 'utils/p2pkh.dart' show P2PKH, P2PKHData;
 import 'crypto/crypto.dart' as bcrypto;

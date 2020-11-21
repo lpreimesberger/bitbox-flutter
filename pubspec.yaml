@@ -1,7 +1,7 @@
-name: bitbox
-description: "BITBOX SDK lite for Flutter: build native cross-platform mobile apps with Bitcoin Cash"
-version: 0.0.5
-homepage: https://github.com/tomasforgacbch/bitbox-flutter
+name: babybitbox
+description: "Baby BitBox: build native cross-platform mobile apps with Bitcoin Cash - updated branch"
+version: 0.1.0
+homepage: https://github.com/lpreimesberger/bitbox-flutter
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -9,13 +9,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.12.0+1
-  bip39: ^1.0.3
-  pointycastle: ^1.0.1
-  bip32: ^1.0.5
+  http: ^0.12.2
+  babybip39: ^1.0.3
+  pointycastle: ^2.0.0
+  babybip32: ^1.0.8
   hex: ^0.1.2
   bs58check: ^1.0.1
-  fixnum: ^0.10.9
+  fixnum: ^0.10.11
   meta: ^1.1.6
 
 dev_dependencies:

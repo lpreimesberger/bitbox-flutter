@@ -1,8 +1,8 @@
-library bitbox;
+library babybitbox;
 
 export 'src/account.dart';
 export 'src/address.dart';
-export 'src/bitbox.dart';
+export 'src/babybitbox.dart';
 export 'src/bitcoincash.dart';
 export 'src/ecpair.dart';
 export 'src/hdnode.dart';
