@@ -1,6 +1,9 @@
 # Bitbox lite
 
+*NOTE* - this is a fork of what appears to be an abandoned library updated with current deps.   Updated versions are tagged as baby*.  
+
 Lite version of [Bitcoin.com's Bitbox JS library](https://developer.bitcoin.com/bitbox/) for building Bitcoin Cash apps in Flutter. Integrated to Bitcoin.com's REST API.
+
 Works with mainnet and testnet.
 
 ## Getting Started
@@ -10,14 +13,14 @@ If you just want to get this from Dart's public package directory:
 
 ```
 dependencies:
-  bitbox: ^0.0.1
+  babybitbox: ^0.1.0
 ```
 
 If you checked this out from Github, add a local dependency into the pubspec.yaml of your testing or development projet:
 
 ```
 dependencies:
-  bitbox_plugin:
+  babybitbox_plugin:
     path: <path to the directory>/
 ```
 	
@@ -27,7 +30,7 @@ dependencies:
 // There's a good chance your own project will use similar names as some of the 
 // classes in this library. A simple way to create some order is to import the 
 // library with Bitbox prefix:
-import 'package:bitbox/bitbox.dart' as Bitbox;
+import 'package:babybitbox/babybitbox.dart' as Bitbox;
 ```
 
 ### 2) Use it
