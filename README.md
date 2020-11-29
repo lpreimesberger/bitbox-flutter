@@ -1,6 +1,9 @@
 # Bitbox lite
 
+*NOTE* - this is a fork of what appears to be an abandoned library updated with current deps.   Updated versions are tagged as baby*.  
+
 Lite version of [Bitcoin.com's Bitbox JS library](https://developer.bitcoin.com/bitbox/) for building Bitcoin Cash apps in Flutter. Integrated to Bitcoin.com's REST API.
+
 Works with mainnet and testnet.
 
 ## Getting Started
@@ -10,7 +13,7 @@ If you just want to get this from Dart's public package directory:
 
 ```
 dependencies:
-  babybitbox: ^0.0.1
+  babybitbox: ^0.1.0
 ```
 
 If you checked this out from Github, add a local dependency into the pubspec.yaml of your testing or development projet:
@@ -133,13 +136,10 @@ if (addressDetails["balance"] > 0) {
     final tx = builder.build();
 
     // broadcast the transaction
-    List<String> sendMe = List<String>();
-    sendMe.add(tx.toHext());
-    final txidList = await Bitbox.RawTransactions.sendRawTransaction(sendMe);
+    final txid = await Bitbox.RawTransactions.sendRawTransaction(tx.toHex());
 
-    // woot!
-    print("Transaction(s) broadcasted:");
-    print(txidList);
+    // Yatta!
+    print("Transaction broadcasted: $txid");
   } else if (totalBalance > 0) {
     print("Enter an output address to test withdrawal transaction");
   }
