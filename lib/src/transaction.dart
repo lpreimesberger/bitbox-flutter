@@ -1,6 +1,8 @@
 import 'dart:typed_data';
+import 'package:babybitbox/src/address.dart';
 import 'package:babybitbox/src/utils/rest_api.dart';
 import 'package:hex/hex.dart';
+import '../babybitbox.dart';
 import 'utils/p2pkh.dart' show P2PKH, P2PKHData;
 import 'crypto/crypto.dart' as bcrypto;
 import 'utils/script.dart' as bscript;
@@ -22,10 +24,13 @@ class Transaction {
   static const ADVANCED_TRANSACTION_MARKER = 0x00;
   static const ADVANCED_TRANSACTION_FLAG = 0x01;
   static final emptyScript = Uint8List.fromList([]);
-  static final zero = HEX.decode('0000000000000000000000000000000000000000000000000000000000000000');
-  static final one = HEX.decode('0000000000000000000000000000000000000000000000000000000000000001');
+  static final zero = HEX.decode(
+      '0000000000000000000000000000000000000000000000000000000000000000');
+  static final one = HEX.decode(
+      '0000000000000000000000000000000000000000000000000000000000000001');
   static final valueUint64Max = HEX.decode('ffffffffffffffff');
-  static final blankOutput = Output(script: emptyScript, valueBuffer: valueUint64Max);
+  static final blankOutput =
+  Output(script: emptyScript, valueBuffer: valueUint64Max);
   static const SATOSHI_MAX = 21 * 1e14;
 
   int version;
@@ -34,11 +39,11 @@ class Transaction {
   List<Output> outputs;
 
   /// If [inputs] or [outputs] are not defined, empty lists are created for each
-  Transaction([version = 2, locktime = 0, ins, outs]) :
-      version = version,
-      locktime = locktime,
-      inputs = ins ?? <Input>[],
-      outputs = outs ?? <Output>[];
+  Transaction([version = 2, locktime = 0, ins, outs])
+      : version = version,
+        locktime = locktime,
+        inputs = ins ?? <Input>[],
+        outputs = outs ?? <Output>[];
 
   /// Creates transaction from its hex representation
   factory Transaction.fromHex(String hex) {
@@ -87,10 +92,10 @@ class Transaction {
     final vinLen = readVarInt();
     for (var i = 0; i < vinLen; ++i) {
       tx.inputs.add(new Input(
-        hash: readSlice(32),
-        index: readUInt32(),
-        script: readVarSlice(),
-        sequence: readUInt32()));
+          hash: readSlice(32),
+          index: readUInt32(),
+          script: readVarSlice(),
+          sequence: readUInt32()));
     }
     final voutLen = readVarInt();
     for (var i = 0; i < voutLen; ++i) {
@@ -108,20 +113,21 @@ class Transaction {
   ///
   /// If [returnAsMap] is true, it will return [Map] with txid used as key. Otherwise it will return [List]
   static details(txIds, [bool returnAsMap = false]) async {
-    assert (txIds is String || txIds is List<String>);
+    assert(txIds is String || txIds is List<String>);
 
     if (txIds is String) {
       return await RestApi.sendGetRequest("transaction/details", txIds) as Map;
     } else if (txIds is List<String>) {
-      return await RestApi.sendPostRequest("transaction/details", "txids", txIds,
-        returnKey: returnAsMap ? "txid" : null);
+      return await RestApi.sendPostRequest(
+          "transaction/details", "txids", txIds,
+          returnKey: returnAsMap ? "txid" : null);
     } else {
       throw TypeError();
     }
   }
 
   bool isCoinbaseHash(buffer) {
-    assert (buffer.length == 32);
+    assert(buffer.length == 32);
 
     for (var i = 0; i < 32; ++i) {
       if (buffer[i] != 0) return false;
@@ -136,10 +142,10 @@ class Transaction {
   /// Add input to the transaction. If [sequence] is not provided, defaults to [DEFAULT_SEQUENCE]
   int addInput(Uint8List hash, int index, [int sequence, Uint8List scriptSig]) {
     inputs.add(new Input(
-      hash: hash,
-      index: index,
-      sequence: sequence ?? DEFAULT_SEQUENCE,
-      script: scriptSig ?? emptyScript));
+        hash: hash,
+        index: index,
+        sequence: sequence ?? DEFAULT_SEQUENCE,
+        script: scriptSig ?? emptyScript));
     return inputs.length - 1;
   }
 
@@ -157,7 +163,8 @@ class Transaction {
   hashForSignature(int inIndex, Uint8List prevOutScript, int hashType) {
     if (inIndex >= inputs.length) return one;
     // ignore OP_CODESEPARATOR
-    final ourScript = bscript.compile(bscript.decompile(prevOutScript).where((x) {
+    final ourScript =
+    bscript.compile(bscript.decompile(prevOutScript).where((x) {
       return x != Opcodes.OP_CODESEPARATOR;
     }).toList());
     final txTmp = Transaction.clone(this);
@@ -196,10 +203,12 @@ class Transaction {
   /// legacy signature
   ///
   /// [amount] must not be null for BCH signatures
-  hashForCashSignature(int inIndex, Uint8List prevOutScript, int amount, int hashType) {
+  hashForCashSignature(int inIndex, Uint8List prevOutScript, int amount,
+      int hashType) {
     if ((hashType & SIGHASH_BITCOINCASHBIP143) > 0) {
       if (amount == null) {
-        throw ArgumentError('Bitcoin Cash sighash requires value of input to be signed.');
+        throw ArgumentError(
+            'Bitcoin Cash sighash requires value of input to be signed.');
       }
 
       return _hashForWitnessV0(inIndex, prevOutScript, amount, hashType);
@@ -210,10 +219,11 @@ class Transaction {
 
   int virtualSize() {
     return 8 +
-      varuint.encodingLength(inputs.length) +
-      varuint.encodingLength(outputs.length) +
-      inputs.fold(0, (sum, input) => sum + 40 + _varSliceSize(input.script)) +
-      outputs.fold(0, (sum, output) => sum + 8 + _varSliceSize(output.script));
+        varuint.encodingLength(inputs.length) +
+        varuint.encodingLength(outputs.length) +
+        inputs.fold(0, (sum, input) => sum + 40 + _varSliceSize(input.script)) +
+        outputs.fold(
+            0, (sum, output) => sum + 8 + _varSliceSize(output.script));
   }
 
   Uint8List toBuffer([Uint8List buffer, int initialOffset]) {
@@ -232,7 +242,8 @@ class Transaction {
     return HEX.encode(getHash().reversed.toList());
   }
 
-  _hashForWitnessV0(int inIndex, Uint8List prevOutScript, int amount, int hashType) {
+  _hashForWitnessV0(int inIndex, Uint8List prevOutScript, int amount,
+      int hashType) {
     Uint8List tBuffer;
     int tOffset;
 
@@ -278,8 +289,8 @@ class Transaction {
     }
 
     if ((hashType & SIGHASH_ANYONECANPAY) == 0 &&
-      (hashType & 0x1f) != SIGHASH_SINGLE &&
-      (hashType & 0x1f) != SIGHASH_NONE) {
+        (hashType & 0x1f) != SIGHASH_SINGLE &&
+        (hashType & 0x1f) != SIGHASH_NONE) {
       tBuffer = Uint8List(4 * this.inputs.length);
       tOffset = 0;
 
@@ -290,7 +301,8 @@ class Transaction {
       hashSequence = bcrypto.hash256(tBuffer);
     }
 
-    if ((hashType & 0x1f) != SIGHASH_SINGLE && (hashType & 0x1f) != SIGHASH_NONE) {
+    if ((hashType & 0x1f) != SIGHASH_SINGLE &&
+        (hashType & 0x1f) != SIGHASH_NONE) {
       final txOutputsSize = this.outputs.fold(0, (int sum, Output output) {
         return sum + 8 + _varSliceSize(output.script);
       });
@@ -304,7 +316,8 @@ class Transaction {
       });
 
       hashOutputs = bcrypto.hash256(tBuffer);
-    } else if ((hashType & 0x1f) == SIGHASH_SINGLE && (inIndex < this.outputs.length)) {
+    } else if ((hashType & 0x1f) == SIGHASH_SINGLE &&
+        (inIndex < this.outputs.length)) {
       final output = this.outputs[inIndex];
 
       tBuffer = Uint8List(8 + _varSliceSize(output.script));
@@ -399,11 +412,7 @@ class Transaction {
       return Output.clone(output);
     }).toList();
     Transaction clonedTx = new Transaction(
-      originalTx.version,
-      originalTx.locktime,
-      inputs,
-      outputs
-    );
+        originalTx.version, originalTx.locktime, inputs, outputs);
 
     return clonedTx;
   }
@@ -425,15 +434,15 @@ class Input {
   Uint8List prevOutScript;
   List<Uint8List> pubkeys;
   List<Uint8List> signatures;
-  Input(
-    {this.hash,
-      this.index,
-      this.script,
-      this.sequence,
-      this.value,
-      this.prevOutScript,
-      this.pubkeys,
-      this.signatures}) {
+
+  Input({this.hash,
+    this.index,
+    this.script,
+    this.sequence,
+    this.value,
+    this.prevOutScript,
+    this.pubkeys,
+    this.signatures}) {
     if (this.hash != null && this.hash.length != 32)
       throw new ArgumentError("Invalid input hash");
     if (this.index != null && !isUint(this.index, 32))
@@ -450,9 +459,9 @@ class Input {
     }
     P2PKH p2pkh = new P2PKH(data: new P2PKHData(input: scriptSig));
     return new Input(
-      prevOutScript: p2pkh.data.output,
-      pubkeys: [p2pkh.data.pubkey],
-      signatures: [p2pkh.data.signature]);
+        prevOutScript: p2pkh.data.output,
+        pubkeys: [p2pkh.data.pubkey],
+        signatures: [p2pkh.data.signature]);
   }
 
   factory Input.clone(Input input) {
@@ -463,31 +472,31 @@ class Input {
       sequence: input.sequence,
       value: input.value,
       prevOutScript: input.prevOutScript != null
-        ? Uint8List.fromList(input.prevOutScript)
-        : null,
+          ? Uint8List.fromList(input.prevOutScript)
+          : null,
       pubkeys: input.pubkeys != null
-        ? input.pubkeys.map(
-          (pubkey) => pubkey != null ? Uint8List.fromList(pubkey) : null)
-        : null,
+          ? input.pubkeys.map(
+              (pubkey) => pubkey != null ? Uint8List.fromList(pubkey) : null)
+          : null,
       signatures: input.signatures != null
-        ? input.signatures.map((signature) =>
+          ? input.signatures.map((signature) =>
       signature != null ? Uint8List.fromList(signature) : null)
-        : null,
+          : null,
     );
   }
 
   @override
   String toString() {
-    return 'Input{hash: $hash, index: $index, sequence: $sequence, value: $value, script: $script, '
-    + 'signScript: $signScript, prevOutScript: $prevOutScript, pubkeys: $pubkeys, signatures: $signatures}';
+    return 'Input{hash: $hash, index: $index, sequence: $sequence, value: $value, script: $script, ' +
+        'signScript: $signScript, prevOutScript: $prevOutScript, pubkeys: $pubkeys, signatures: $signatures}';
   }
 
   static bool _isP2PKHInput(script) {
     final chunks = bscript.decompile(script);
     return chunks != null &&
-      chunks.length == 2 &&
-      bscript.isCanonicalScriptSignature(chunks[0]) &&
-      bscript.isCanonicalPubKey(chunks[1]);
+        chunks.length == 2 &&
+        bscript.isCanonicalScriptSignature(chunks[0]) &&
+        bscript.isCanonicalPubKey(chunks[1]);
   }
 }
 
@@ -499,10 +508,15 @@ class Output {
   List<Uint8List> pubkeys;
   List<Uint8List> signatures;
 
-  Output({this.script, this.value, this.pubkeys, this.signatures, this.valueBuffer}) {
+  Output({this.script,
+    this.value,
+    this.pubkeys,
+    this.signatures,
+    this.valueBuffer}) {
     if (value != null && !isSatoshi(value))
       throw ArgumentError("Invalid ouput value");
   }
+
   /*
   factory Output.expandOutput(Uint8List script, Uint8List ourPubKey) {
     if (_isP2PKHOutput(script) == false) {
@@ -519,21 +533,201 @@ class Output {
       script: output.script != null ? Uint8List.fromList(output.script) : null,
       value: output.value,
       valueBuffer: output.valueBuffer != null
-        ? Uint8List.fromList(output.valueBuffer)
-        : null,
+          ? Uint8List.fromList(output.valueBuffer)
+          : null,
       pubkeys: output.pubkeys != null
-        ? output.pubkeys.map(
-          (pubkey) => pubkey != null ? Uint8List.fromList(pubkey) : null)
-        : null,
+          ? output.pubkeys.map(
+              (pubkey) => pubkey != null ? Uint8List.fromList(pubkey) : null)
+          : null,
       signatures: output.signatures != null
-        ? output.signatures.map((signature) =>
+          ? output.signatures.map((signature) =>
       signature != null ? Uint8List.fromList(signature) : null)
-        : null,
+          : null,
     );
   }
 
   @override
   String toString() {
     return 'Output{script: $script, value: $value, valueBuffer: $valueBuffer, pubkeys: $pubkeys, signatures: $signatures}';
+  }
+}
+
+class Memo {
+  static String test() {
+    return "XXX";
+  }
+
+  static Future<bool> _inputMuncher(HDNode childNode, dynamic signatures,
+      TransactionBuilder tt) async {
+    // munch all the available inputs (boilerplate for every memo post
+    final utxos = await Address.utxo(childNode.toCashAddress()) as List<Utxo>;
+    if (utxos.isEmpty) return false;
+    utxos.forEach((Utxo utxo) {
+// add the utxo as an input for the transaction
+      tt.addInput(utxo.txid, utxo.vout);
+// add a signature to the list to be used later
+      signatures.add({
+        "vin": signatures.length,
+        "key_pair": childNode.keyPair,
+        "original_amount": utxo.satoshis
+      });
+    });
+    return true;
+  }
+
+  ///  set the name on memo.cash - will fail if no balance
+  static Future setName(HDNode childNode, String toThis) async {
+    // OP_RETURN 6d01 hex-data-here
+    // retrieve address' utxos from the rest api
+    final address = childNode.toCashAddress();
+    final signatures = <Map>[];
+    var transactionBuilder = TransactionBuilder();
+    if (!await _inputMuncher(childNode, signatures, transactionBuilder)) {
+      print(
+          "Warning - unable to do memo transaction on wallet with no inputs (no balance)");
+      return null;
+    }
+    // placeholder for input signatures
+    List<int> sendBuffer = List<int>();
+    // prepend the memo tags - there is a bug where the first PUSH gets dropped
+    // i don't want to fix rn since it would break other stuff, PRs appreciated :)
+    sendBuffer.add(0x02); // lost value
+    sendBuffer.add(0x02); // kept value (two commands)
+    sendBuffer.add(0x6d); // memo flag
+    sendBuffer.add(0x01); // set name command
+    sendBuffer.add(toThis.length); // push data length
+    sendBuffer.addAll(toThis.codeUnits); // the string itself
+    var e = encode(0x6a, Uint8List.fromList(sendBuffer));
+    transactionBuilder.addOutput(e, 0);
+    // sign all inputs
+    signatures.forEach((signature) {
+      transactionBuilder.sign(signature["vin"], signature["key_pair"],
+          signature["original_amount"]);
+    });
+    var built = transactionBuilder.build();
+    List<String> tempSend = List<String>();
+    tempSend.add(built.toHex());
+    var result = await RawTransactions.sendRawTransaction(tempSend);
+    if (result == null) {
+      print("WARNING - unable to send request?   Not sure why - check log...");
+    }
+    return result;
+  }
+
+  ///  set the name on memo.cash - will fail if no balance
+  static Future post(HDNode childNode, String postText) async {
+    // OP_RETURN 6d02 hex-data-here
+    // safe truncate
+    if(postText.length > 217) postText = postText.substring(0,216);
+    final signatures = <Map>[];
+    var transactionBuilder = TransactionBuilder();
+    if (!await _inputMuncher(childNode, signatures, transactionBuilder)) {
+      print(
+          "Warning - unable to do memo transaction on wallet with no inputs (no balance)");
+      return null;
+    }
+    // placeholder for input signatures
+    List<int> sendBuffer = List<int>();
+    // prepend the memo tags - there is a bug where the first PUSH gets dropped
+    // i don't want to fix rn since it would break other stuff, PRs appreciated :)
+    sendBuffer.add(0x02); // lost value
+    sendBuffer.add(0x02); // kept value (two commands)
+    sendBuffer.add(0x6d); // memo flag
+    sendBuffer.add(0x02); // post command
+    sendBuffer.add(postText.length); // push data length
+    sendBuffer.addAll(postText.codeUnits); // the string itself
+    var e = encode(0x6a, Uint8List.fromList(sendBuffer));
+    transactionBuilder.addOutput(e, 0);
+    // sign all inputs
+    signatures.forEach((signature) {
+      transactionBuilder.sign(signature["vin"], signature["key_pair"],
+          signature["original_amount"]);
+    });
+    var built = transactionBuilder.build();
+    List<String> tempSend = List<String>();
+    tempSend.add(built.toHex());
+    var result = await RawTransactions.sendRawTransaction(tempSend);
+    if (result == null) {
+      print("WARNING - unable to send request?   Not sure why - check log...");
+    }
+    return result;
+  }
+
+  ///  set the name on memo.cash - will fail if no balance
+  static Future profileText(HDNode childNode, String postText) async {
+    // OP_RETURN 6d02 hex-data-here
+    // safe truncate
+    if(postText.length > 217) postText = postText.substring(0,216);
+    final signatures = <Map>[];
+    var transactionBuilder = TransactionBuilder();
+    if (!await _inputMuncher(childNode, signatures, transactionBuilder)) {
+      print(
+          "Warning - unable to do memo transaction on wallet with no inputs (no balance)");
+      return null;
+    }
+    // placeholder for input signatures
+    List<int> sendBuffer = List<int>();
+    // prepend the memo tags - there is a bug where the first PUSH gets dropped
+    // i don't want to fix rn since it would break other stuff, PRs appreciated :)
+    sendBuffer.add(0x02); // lost value
+    sendBuffer.add(0x02); // kept value (two commands)
+    sendBuffer.add(0x6d); // memo flag
+    sendBuffer.add(0x05); // profile command
+    sendBuffer.add(postText.length); // push data length
+    sendBuffer.addAll(postText.codeUnits); // the string itself
+    var e = encode(0x6a, Uint8List.fromList(sendBuffer));
+    transactionBuilder.addOutput(e, 0);
+    // sign all inputs
+    signatures.forEach((signature) {
+      transactionBuilder.sign(signature["vin"], signature["key_pair"],
+          signature["original_amount"]);
+    });
+    var built = transactionBuilder.build();
+    List<String> tempSend = List<String>();
+    tempSend.add(built.toHex());
+    var result = await RawTransactions.sendRawTransaction(tempSend);
+    if (result == null) {
+      print("WARNING - unable to send request?   Not sure why - check log...");
+    }
+    return result;
+  }
+
+  ///  set the name on memo.cash - will fail if no balance
+  static Future profilePicture(HDNode childNode, String postText) async {
+    // OP_RETURN 6d02 hex-data-here
+    // safe truncate
+    if(postText.length > 217) postText = postText.substring(0,216);
+    final signatures = <Map>[];
+    var transactionBuilder = TransactionBuilder();
+    if (!await _inputMuncher(childNode, signatures, transactionBuilder)) {
+      print(
+          "Warning - unable to do memo transaction on wallet with no inputs (no balance)");
+      return null;
+    }
+    // placeholder for input signatures
+    List<int> sendBuffer = List<int>();
+    // prepend the memo tags - there is a bug where the first PUSH gets dropped
+    // i don't want to fix rn since it would break other stuff, PRs appreciated :)
+    sendBuffer.add(0x02); // lost value
+    sendBuffer.add(0x02); // kept value (two commands)
+    sendBuffer.add(0x6d); // memo flag
+    sendBuffer.add(0x0a); // post command
+    sendBuffer.add(postText.length); // push data length
+    sendBuffer.addAll(postText.codeUnits); // the string itself
+    var e = encode(0x6a, Uint8List.fromList(sendBuffer));
+    transactionBuilder.addOutput(e, 0);
+    // sign all inputs
+    signatures.forEach((signature) {
+      transactionBuilder.sign(signature["vin"], signature["key_pair"],
+          signature["original_amount"]);
+    });
+    var built = transactionBuilder.build();
+    List<String> tempSend = List<String>();
+    tempSend.add(built.toHex());
+    var result = await RawTransactions.sendRawTransaction(tempSend);
+    if (result == null) {
+      print("WARNING - unable to send request?   Not sure why - check log...");
+    }
+    return result;
   }
 }
