@@ -1,10 +1,12 @@
-# Bitbox lite
+# Baby Bitbox
 
 *NOTE* - this is a fork of what appears to be an abandoned library updated with current deps.   Updated versions are tagged as baby*.  
 
 Lite version of [Bitcoin.com's Bitbox JS library](https://developer.bitcoin.com/bitbox/) for building Bitcoin Cash apps in Flutter. Integrated to Bitcoin.com's REST API.
 
-Works with mainnet and testnet.
+Want the original?  It's [here](https://pub.dev/packages/bitbox)
+
+Works with mainnet and testnet.  Pointycastle does not support Web - but this should run on other platforms.
 
 ## Getting Started
 
@@ -13,7 +15,7 @@ If you just want to get this from Dart's public package directory:
 
 ```
 dependencies:
-  babybitbox: ^0.1.0
+  babybitbox: ^0.1.1
 ```
 
 If you checked this out from Github, add a local dependency into the pubspec.yaml of your testing or development projet:
@@ -146,6 +148,12 @@ if (addressDetails["balance"] > 0) {
 }
 ```
 
+Memo.cash is now supported - but with a limited subset (many of the calls aren't easily supportable - if you need can add an issue).
+
+```
+    BabyBitbox.Memo.setName(childNode, toThis);
+```
+
 For further documentation, refer to apidoc of this repository
 
 ## Testing
@@ -172,6 +180,4 @@ Optionally between step 1) and 2), send some balance to either testnet or mainne
 
 ## Acknowledgments
 
-This is a port of the original JS-based Bitbox library by Gabriel Cardona and Bitcoin.com, so first of all huge thanks to Gabriel and the whole Bitcoin.com team for doing so much for the BCH ecosystem.
-
-Also I either re-used a lot of code originally wrote for Bitcoin or called some libraries (bip39 and bip32) by [anicdh](https://github.com/anicdh), so Thanks big time to him. Without that it would take me many more weeks!
+This version is a forked version of https://pub.dev/packages/bitbox - Tomas did all the heavy lifting and deserves all the credit for goodness in this library, I own all the bugs.

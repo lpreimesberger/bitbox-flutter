@@ -23,5 +23,8 @@ Light version of Bitcoin.com's Bitbox library
 - fixed signing mechanism, so it would better handle 31-byte private key
 
 ## [0.1.0] - 2020-11-20
-
 - update deps, pointycastle to current versions
+
+## [0.1.1] - 2020-11-29
+- memo.cash updates
+

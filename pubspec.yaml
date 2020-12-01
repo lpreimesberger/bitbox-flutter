@@ -1,6 +1,6 @@
 name: babybitbox
-description: "Baby BitBox: build native cross-platform mobile apps with Bitcoin Cash - updated branch"
-version: 0.1.0
+description: "Baby BitBox: build native cross-platform mobile apps with BCH/memo.cash"
+version: 0.1.1
 homepage: https://github.com/lpreimesberger/bitbox-flutter
 
 environment:

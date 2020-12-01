@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'dart:math';
 import 'package:babybip32/src/utils/ecurve.dart' as ecc;
 import 'package:babybip32/src/utils/wif.dart' as wif;
-import 'babybitbox.dart';
 import 'package:pointycastle/ecc/api.dart';
 
 import 'address.dart';
